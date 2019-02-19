@@ -51,7 +51,7 @@ python test.py
 
 - `batch_svd()` has no configurations of `some`, `compute_uv` like `torch.svd()`. `batch_svd(x)` is equivalent to `torch.svd(x, some=True, compute_uv=True)`.
 
-- The sign of column vectors at U and V may be different.
+- The sign of column vectors at U and V may be different from `torch.svd()`.
 
 - `batch_svd()`is much more faster than `torch.svd()` using loop.
 
