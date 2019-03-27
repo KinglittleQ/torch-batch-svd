@@ -28,7 +28,7 @@ NOTE: `batch_svd` only supports `CudaFloatTensor` now. Other types may be suppor
 
 ## 3) Install
 
-### 1.1 Set environment variable
+### 1.1 Set environment variables
 
 ``` shell
 export CUDA_HOME=/your/cuda/home/directory/
@@ -47,7 +47,7 @@ python setup.py install
 python test.py
 ```
 
-## 4) Different between `torch.svd()`
+## 4) Differences between `torch.svd()`
 
 - `batch_svd()` has no configurations of `some`, `compute_uv` like `torch.svd()`. `batch_svd(x)` is equivalent to `torch.svd(x, some=True, compute_uv=True)`.
 
