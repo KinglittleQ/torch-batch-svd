@@ -13,7 +13,7 @@ def test():
     loss = U.sum() + S.sum() + V.sum()
     loss.backward()
 
-    u, s, v = torch.svd(b[0], some=False, compute_uv=True)
+    u, s, v = torch.svd(b[0], some=True, compute_uv=True)
     loss0 = u.sum() + s.sum() + v.sum()
     loss0.backward()
 
