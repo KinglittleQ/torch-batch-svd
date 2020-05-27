@@ -1,7 +1,7 @@
 import torch
 from torch import testing
 
-from torch_batch_svd import batch_svd
+from torch_batch_svd import svd
 
 
 def test_float():
@@ -11,7 +11,7 @@ def test_float():
     a.requires_grad = True
     b.requires_grad = True
 
-    U, S, V = batch_svd(a)
+    U, S, V = svd(a)
     loss = U.sum() + S.sum() + V.sum()
     loss.backward()
 
@@ -32,7 +32,7 @@ def test_double():
     a.requires_grad = True
     b.requires_grad = True
 
-    U, S, V = batch_svd(a)
+    U, S, V = svd(a)
     loss = U.sum() + S.sum() + V.sum()
     loss.backward()
 
@@ -57,7 +57,7 @@ def test_half():
     a.requires_grad = True
     b.requires_grad = True
 
-    U, S, V = batch_svd(a)
+    U, S, V = svd(a)
     loss = U.sum() + S.sum() + V.sum()
     loss.backward()
 

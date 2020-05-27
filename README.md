@@ -8,15 +8,16 @@ In terms of speed, it is superior to that of `torch.svd`.
 
 ``` python
 import torch
-from torch_batch_svd import batch_svd
+from torch_batch_svd import svd
 
 A = torch.rand(1000000, 3, 3).cuda()
-u, s, v = batch_svd(A)
+u, s, v = svd(A)
 u, s, v = torch.svd(A)  # probably you should take a coffee break here
 ```
 
 The catch here is that it only works for matrices whose row and column are smaller than `32`.
-
+Other than that, `torch_batch_svd.svd` can be a drop-in for the native one.
+ 
 The forward function is modified from [ShigekiKarita/pytorch-cusolver](https://github.com/ShigekiKarita/pytorch-cusolver) and I fixed several bugs of it. The backward function is adapted from pytorch official [svd backward function](https://github.com/pytorch/pytorch/blob/b0545aa85f7302be5b9baf8320398981365f003d/tools/autograd/templates/Functions.cpp#L1476). I converted it to a batch version.
 
 **NOTE**: `batch_svd` supports all `torch.half`, `torch.float` and `torch.double` tensors now. 
@@ -59,8 +60,6 @@ python -m pytest test.py
 ```
 
 ## 4) Differences between `torch.svd()`
-
-- `batch_svd()` has no configurations of `some`, `compute_uv` like `torch.svd()`. `batch_svd(x)` is equivalent to `torch.svd(x, some=True, compute_uv=True)`.
 
 - The sign of column vectors at U and V may be different from `torch.svd()`.
 

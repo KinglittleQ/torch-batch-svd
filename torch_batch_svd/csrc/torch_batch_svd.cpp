@@ -8,9 +8,12 @@
 
 // solve U S V = svd(A)  a.k.a. syevj, where A (b, m, n), U (b, m, m), S (b, min(m, n)), V (b, n, n)
 // see also https://docs.nvidia.com/cuda/cusolver/index.html#batchgesvdj-example1
-std::vector<at::Tensor> batch_svd_forward(at::Tensor a, bool is_sort, double tol, int max_sweeps, bool is_double)
+void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V, bool is_sort, double tol, int max_sweeps, bool is_double)
 {
     CHECK_CUDA(a);
+    CHECK_CUDA(U);
+    CHECK_CUDA(s);
+    CHECK_CUDA(V);
     CHECK_IS_FLOAT(a);
 
     auto handle_ptr = unique_allocate(cusolverDnCreate, cusolverDnDestroy);
@@ -22,10 +25,7 @@ std::vector<at::Tensor> batch_svd_forward(at::Tensor a, bool is_sort, double tol
     TORCH_CHECK(n <= 32, "matrix col should be <= 32");
     const auto lda = m;
     const auto minmn = std::min(m, n);
-    auto s = at::empty({batch_size, minmn}, a.type());
-    auto U = at::empty({batch_size, m, m}, a.type());
     const auto ldu = m;
-    auto V = at::empty({batch_size, n, n}, a.type());
     const auto ldv = n;
 
     auto params = unique_allocate(cusolverDnCreateGesvdjInfo, cusolverDnDestroyGesvdjInfo);
@@ -149,11 +149,6 @@ std::vector<at::Tensor> batch_svd_forward(at::Tensor a, bool is_sort, double tol
             std::cout << "WARNING: matrix " << i << ", info = " << hinfo[i] << ": Jacobi method does not converge" << std::endl;
         }
     }
-
-    U = U.transpose(1, 2).contiguous();
-    s = s.contiguous();
-    V = V.transpose(1, 2).contiguous();
-    return {U, s, V};
 }
 
 
