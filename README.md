@@ -2,17 +2,20 @@
 
 ## 1) Introduction
 
-It is a batch version SVD of pytorch implemented by cuSolver including forward and backward function.
+A batch version of SVD in Pytorch implemented using cuSolver 
+including forward and backward function.
+In terms of speed, it is superior to that of `torch.svd`.
 
 ``` python
-def batch_svd(x):
-    """
-    input:
-        x --- shape of [B, M, N]
-    return:
-        U, S, V = batch_svd(x) where x = USV^T
-    """
+import torch
+from torch_batch_svd import batch_svd
+
+A = torch.rand(1000000, 3, 3).cuda()
+batch_svd(A)
+torch.svd(A)  # probably you should take a coffee break here
 ```
+
+The catch here is that it only works for matrices whose row and column are smaller than `32`.
 
 The forward function is modified from [ShigekiKarita/pytorch-cusolver](https://github.com/ShigekiKarita/pytorch-cusolver) and I fixed several bugs of it. The backward function is adapted from pytorch official [svd backward function](https://github.com/pytorch/pytorch/blob/b0545aa85f7302be5b9baf8320398981365f003d/tools/autograd/templates/Functions.cpp#L1476). I converted it to a batch version.
 
@@ -24,27 +27,30 @@ NOTE: `batch_svd` only supports `CudaFloatTensor` now. Other types may be suppor
 
     > diag_embed() is used in torch_batch_svd.cpp at the backward function. Pytorch with version lower than 1.0 does not contains diag_embed(). If you want to use it in lower version pytorch, you can replace diag_embed() by some existing function.
 
-- CUDA 9.0
+- CUDA 9.0/10.2 (should work with 10.0/10.1 too)
+
+- Tested in Pytorch 1.4 & 1.5, with CUDA 10.2
 
 ## 3) Install
 
-### 1.1 Set environment variables
+Set environment variables
 
 ``` shell
 export CUDA_HOME=/your/cuda/home/directory/
 export LIBRARY_PATH=$LIBRARY_PATH:/your/cuda/lib64/  (optional)
 ```
 
-### 1.2 Run `setup.py`
+Run `setup.py`
 
 ``` shell
 python setup.py install
 ```
 
-### 1.3 Run `test.py`
+Run `test.py`
 
 ```shell
-python test.py
+cd tests
+python -m pytest test.py
 ```
 
 ## 4) Differences between `torch.svd()`
@@ -57,5 +63,4 @@ python test.py
 
 ## 5) Example
 
-See `test.py`.
-
+See `test.py` and [introduction](#1-introduction).

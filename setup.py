@@ -1,23 +1,20 @@
-from setuptools import setup
-from torch.utils.cpp_extension import CppExtension, BuildExtension
+from setuptools import setup, find_packages
+from torch.utils.cpp_extension import CUDAExtension, BuildExtension
 import os
-
-
-# export CUDA_HOME=<YOUR_CUDA_DIR>
-conda = os.getenv("CUDA_HOME")
-if conda:
-    inc = [conda + "/include"]
-else:
-    inc = []
+import glob
 
 libname = "torch_batch_svd"
+ext_src = glob.glob(os.path.join(libname, 'csrc/*.cpp'))
+print(ext_src)
+
 setup(name=libname,
-      ext_modules=[CppExtension(
-          libname,
-          [libname + '.cpp'],
-          include_dirs=inc,
+      packages=find_packages(),
+      ext_modules=[CUDAExtension(
+          libname + '._c',
+          sources=ext_src,
           libraries=["cusolver", "cublas"],
-          extra_compile_args={'cxx': ['-g', '-DDEBUG'],
+          extra_compile_args={'cxx': ['-O2', '-I{}'.format('{}/include'.format(libname))],
                               'nvcc': ['-O2']}
       )],
-      cmdclass={'build_ext': BuildExtension})
+      cmdclass={'build_ext': BuildExtension.with_options(use_ninja=False)}
+      )
