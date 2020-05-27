@@ -8,7 +8,7 @@ ext_src = glob.glob(os.path.join(libname, 'csrc/*.cpp'))
 print(ext_src)
 
 setup(name=libname,
-      packages=find_packages(),
+      packages=find_packages(exclude=('tests', 'build', 'csrc', 'include', 'torch_batch_svd.egg-info')),
       ext_modules=[CUDAExtension(
           libname + '._c',
           sources=ext_src,

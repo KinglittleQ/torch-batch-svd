@@ -11,15 +11,20 @@ import torch
 from torch_batch_svd import batch_svd
 
 A = torch.rand(1000000, 3, 3).cuda()
-batch_svd(A)
-torch.svd(A)  # probably you should take a coffee break here
+u, s, v = batch_svd(A)
+u, s, v = torch.svd(A)  # probably you should take a coffee break here
 ```
 
 The catch here is that it only works for matrices whose row and column are smaller than `32`.
 
 The forward function is modified from [ShigekiKarita/pytorch-cusolver](https://github.com/ShigekiKarita/pytorch-cusolver) and I fixed several bugs of it. The backward function is adapted from pytorch official [svd backward function](https://github.com/pytorch/pytorch/blob/b0545aa85f7302be5b9baf8320398981365f003d/tools/autograd/templates/Functions.cpp#L1476). I converted it to a batch version.
 
-NOTE: `batch_svd` only supports `CudaFloatTensor` now. Other types may be supported in the future.
+**NOTE**: `batch_svd` supports all `torch.half`, `torch.float` and `torch.double` tensors now. 
+
+**NOTE**: SVD for `torch.half` is performed by casting to `torch.float` 
+as there is no CuSolver implementation for `c10::half`.   
+
+**NOTE**: Sometimes, tests will fail for `torch.double` tensor due to numerical imprecision.
 
 ## 2) Requirements
 
