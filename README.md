@@ -37,7 +37,7 @@ as there is no CuSolver implementation for `c10::half`.
 
 - Pytorch >= 1.0
 
-    > diag_embed() is used in torch_batch_svd.cpp at the backward function. Pytorch with version lower than 1.0 does not contain diag_embed(). If you want to use it in a lower version of pytorch, you can replace diag_embed() by some existing functions.
+  `diag_embed()` is used in torch_batch_svd.cpp at the backward function. Pytorch with version lower than 1.0 does not contain `diag_embed()`. If you want to use it in a lower version of pytorch, you can replace `diag_embed()` by some existing functions.
 
 - CUDA 9.0/10.2 (should work with 10.0/10.1 too)
 
