@@ -1,10 +1,16 @@
-# Pytorch Batch SVD
+# Pytorch Batched SVD
 
 ## 1) Introduction
 
-A batch version of SVD in Pytorch implemented using cuSolver 
+A batched version of SVD in Pytorch implemented using cuSolver 
 including forward and backward function.
 In terms of speed, it is superior to that of `torch.svd`.
+
+| matrix size    | torch.svd     | torch_batch_svd.svd  |
+| -------------  |:-------------:| :-------------------:|
+| `(10000, 9, 9)`  | **0.41** s    | 12.29 s              |
+| `(20000, 9, 9)`  | **0.46** s    | 23.96 s              |
+
 
 ``` python
 import torch
@@ -18,7 +24,7 @@ u, s, v = torch.svd(A)  # probably you should take a coffee break here
 The catch here is that it only works for matrices whose row and column are smaller than `32`.
 Other than that, `torch_batch_svd.svd` can be a drop-in for the native one.
  
-The forward function is modified from [ShigekiKarita/pytorch-cusolver](https://github.com/ShigekiKarita/pytorch-cusolver) and I fixed several bugs of it. The backward function is adapted from pytorch official [svd backward function](https://github.com/pytorch/pytorch/blob/b0545aa85f7302be5b9baf8320398981365f003d/tools/autograd/templates/Functions.cpp#L1476). I converted it to a batch version.
+The forward function is modified from [ShigekiKarita/pytorch-cusolver](https://github.com/ShigekiKarita/pytorch-cusolver) and I fixed several bugs of it. The backward function is borrowed from the pytorch official [svd backward function](https://github.com/pytorch/pytorch/blob/b0545aa85f7302be5b9baf8320398981365f003d/tools/autograd/templates/Functions.cpp#L1476). I converted it to a batched version.
 
 **NOTE**: `batch_svd` supports all `torch.half`, `torch.float` and `torch.double` tensors now. 
 
