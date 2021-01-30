@@ -69,7 +69,7 @@ python -m pytest test.py
 
 - The sign of column vectors at U and V may be different from `torch.svd()`.
 
-- `batch_svd()`is much more faster than `torch.svd()` using loop.
+- Much more faster than `torch.svd()` using loop.
 
 ## 5) Example
 
