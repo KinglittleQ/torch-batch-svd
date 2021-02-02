@@ -8,8 +8,8 @@ In terms of speed, it is superior to that of `torch.svd`.
 
 | matrix size      | torch_batch_svd.svd  | torch.svd  |
 | ---------------  |:--------------------:| :---------:|
-| `(10000, 9, 9)`  | **0.41** s           | 12.29 s    |
-| `(20000, 9, 9)`  | **0.46** s           | 23.96 s    |
+| `(10000, 9, 9)`  | **0.043** s          | 19.352 s   |
+| `(20000, 9, 9)`  | **0.073** s          | 34.578 s   |
 
 
 ``` python
