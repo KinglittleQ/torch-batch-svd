@@ -1,7 +1,9 @@
-#include <THC/THC.h>
 #include <algorithm>
 #include <iostream>
 #include <memory>
+
+#include <THC/THC.h>
+#include <c10/cuda/CUDAGuard.h>
 
 #include "torch_batch_svd.h"
 #include "utils.h"
@@ -18,9 +20,14 @@ void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V,
   CHECK_CUDA(V);
   CHECK_IS_FLOAT(a);
 
+  const at::cuda::OptionalCUDAGuard device_guard(a.device());
+
   auto handle_ptr = unique_allocate(cusolverDnCreate, cusolverDnDestroy);
-  const auto A = a.contiguous().clone().transpose(1, 2).contiguous().transpose(
-      1, 2); // important
+
+  // important!!! Convert from row major to column major
+  const auto A = a.contiguous().clone().transpose(1, 2)
+                  .contiguous().transpose(1, 2);
+
   const auto batch_size = A.size(0);
   const auto m = A.size(1);
   TORCH_CHECK(m <= 32, "matrix row should be <= 32");
@@ -110,6 +117,8 @@ at::Tensor batch_svd_backward(const std::vector<at::Tensor> &grads,
               "compute singular matrices, ",
               "and hence we cannot compute backward. Please use "
               "torch.svd(compute_uv=True)");
+
+  const at::cuda::OptionalCUDAGuard device_guard(self.device());
 
   // A [b, m, n]
   // auto b = self.size(0);

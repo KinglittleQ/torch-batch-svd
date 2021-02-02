@@ -4,9 +4,12 @@ from torch import testing
 from torch_batch_svd import svd
 
 
+N, H, W = 100, 9, 3
+
+
 def test_float():
     torch.manual_seed(0)
-    a = torch.randn(1000000, 9, 3).cuda()
+    a = torch.randn(N, H, W).cuda()
     b = a.clone()
     a.requires_grad = True
     b.requires_grad = True
@@ -19,15 +22,16 @@ def test_float():
     loss0 = u.sum() + s.sum() + v.sum()
     loss0.backward()
 
-    testing.assert_allclose(U[0].abs(), u.abs())  # eigenvectors are only precise up to sign
+    # eigenvectors are only precise up to sign
+    testing.assert_allclose(U[0].abs(), u.abs())
     testing.assert_allclose(S[0].abs(), s.abs())
     testing.assert_allclose(V[0].abs(), v.abs())
-    testing.assert_allclose(a, torch.matmul(torch.matmul(U, torch.diag_embed(S)), V.transpose(-2, -1)))
+    testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1))
 
 
 def test_double():
     torch.manual_seed(0)
-    a = torch.randn(10, 9, 3).cuda().double()
+    a = torch.randn(N, H, W).cuda().double()
     b = a.clone()
     a.requires_grad = True
     b.requires_grad = True
@@ -44,15 +48,17 @@ def test_double():
     assert S.dtype == torch.double
     assert V.dtype == torch.double
     assert a.grad.dtype == torch.double
-    testing.assert_allclose(U[0].abs(), u.abs())  # eigenvectors are only precise up to sign
+
+    # eigenvectors are only precise up to sign
+    testing.assert_allclose(U[0].abs(), u.abs())
     testing.assert_allclose(S[0].abs(), s.abs())
     testing.assert_allclose(V[0].abs(), v.abs())
-    testing.assert_allclose(a, torch.matmul(torch.matmul(U, torch.diag_embed(S)), V.transpose(-2, -1)))
+    testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1))
 
 
 def test_half():
     torch.manual_seed(0)
-    a = torch.randn(10, 9, 3).cuda().half()
+    a = torch.randn(N, H, W).cuda().half()
     b = a.clone()
     a.requires_grad = True
     b.requires_grad = True
@@ -65,4 +71,32 @@ def test_half():
     assert S.dtype == torch.half
     assert V.dtype == torch.half
     assert a.grad.dtype == torch.half
-    testing.assert_allclose(a, torch.matmul(torch.matmul(U, torch.diag_embed(S)), V.transpose(-2, -1)))
+    testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1),
+                            atol=0.01, rtol=0.01)
+
+
+def test_multiple_gpus():
+    num_gpus = torch.cuda.device_count()
+
+    for gpu_idx in range(num_gpus):
+        device = torch.device('cuda:{}'.format(gpu_idx))
+
+        torch.manual_seed(0)
+        a = torch.randn(N, H, W).to(device)
+        b = a.clone()
+        a.requires_grad = True
+        b.requires_grad = True
+
+        U, S, V = svd(a)
+        loss = U.sum() + S.sum() + V.sum()
+        loss.backward()
+
+        u, s, v = torch.svd(b[0], some=True, compute_uv=True)
+        loss0 = u.sum() + s.sum() + v.sum()
+        loss0.backward()
+
+        # eigenvectors are only precise up to sign
+        testing.assert_allclose(U[0].abs(), u.abs())
+        testing.assert_allclose(S[0].abs(), s.abs())
+        testing.assert_allclose(V[0].abs(), v.abs())
+        testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1))
