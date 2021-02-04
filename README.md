@@ -62,7 +62,7 @@ Run `test.py`
 
 ```shell
 cd tests
-python -m pytest test.py
+python -m pytest tests.py
 ```
 
 ## 4) Differences between `torch.svd()`
