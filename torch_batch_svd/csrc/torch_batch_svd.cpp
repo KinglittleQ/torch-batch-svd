@@ -25,8 +25,8 @@ void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V,
   auto handle_ptr = unique_allocate(cusolverDnCreate, cusolverDnDestroy);
 
   // important!!! Convert from row major to column major
-  const auto A = a.contiguous().clone().transpose(1, 2)
-                  .contiguous().transpose(1, 2);
+  const auto A =
+      a.contiguous().clone().transpose(1, 2).contiguous().transpose(1, 2);
 
   const auto batch_size = A.size(0);
   const auto m = A.size(1);

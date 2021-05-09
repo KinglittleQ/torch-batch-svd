@@ -7,23 +7,23 @@
 #include <cusolverDn.h>
 #include <cusolver_common.h>
 
-#define CHECK_CUDA(x)                                         \
-  do {                                                        \
-    TORCH_CHECK(x.is_cuda(), #x " must be a CUDA tensor");    \
+#define CHECK_CUDA(x)                                                          \
+  do {                                                                         \
+    TORCH_CHECK(x.is_cuda(), #x " must be a CUDA tensor");                     \
   } while (0)
 
-#define CHECK_IS_FLOAT(x)                                           \
-  do {                                                              \
-    TORCH_CHECK((x.scalar_type() == at::ScalarType::Float) ||       \
-                    (x.scalar_type() == at::ScalarType::Half) ||    \
-                    (x.scalar_type() == at::ScalarType::Double),    \
-                #x " must be a double, float or half tensor");      \
+#define CHECK_IS_FLOAT(x)                                                      \
+  do {                                                                         \
+    TORCH_CHECK((x.scalar_type() == at::ScalarType::Float) ||                  \
+                    (x.scalar_type() == at::ScalarType::Half) ||               \
+                    (x.scalar_type() == at::ScalarType::Double),               \
+                #x " must be a double, float or half tensor");                 \
   } while (0)
 
 template <int success = CUSOLVER_STATUS_SUCCESS, class T,
           class Status> // , class A = Status(*)(P), class D = Status(*)(T)>
-std::unique_ptr<T, Status (*)(T *)>
-unique_allocate(Status(allocator)(T **), Status(deleter)(T *)) {
+std::unique_ptr<T, Status (*)(T *)> unique_allocate(Status(allocator)(T **),
+                                                    Status(deleter)(T *)) {
   T *ptr;
   auto stat = allocator(&ptr);
   TORCH_CHECK(stat == success);
