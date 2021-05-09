@@ -18,6 +18,6 @@ jobs:
       with:
         author_name: Github Action Robot
         author_email: robot@example.com
-        message: 'Auto format files'
+        message: 'Auto format cpp files'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
