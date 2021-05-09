@@ -1,22 +1,19 @@
-name: Run autoyapf
+name: Run pylint
 
 on: [push]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: autoyapf
-      id: autoyapf
-      uses: mritunjaysharma394/autoyapf@v2
-      with:
-        args: --style pep8 --recursive --in-place .
-    - uses: EndBug/add-and-commit@v4
-      with:
-        author_name: Github Action Robot
-        author_email: robot@example.com
-        message: 'Auto format python files'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: Install Python dependencies
+        run: |
+          pip install pipenv
+          pipenv install --deploy --dev --system
+      - uses: wearerequired/lint-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          black: true
+          auto_fix: true
