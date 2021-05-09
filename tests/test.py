@@ -3,7 +3,6 @@ from torch import testing
 
 from torch_batch_svd import svd
 
-
 N, H, W = 100, 9, 3
 
 
@@ -71,8 +70,10 @@ def test_half():
     assert S.dtype == torch.half
     assert V.dtype == torch.half
     assert a.grad.dtype == torch.half
-    testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1),
-                            atol=0.01, rtol=0.01)
+    testing.assert_allclose(a,
+                            U @ torch.diag_embed(S) @ V.transpose(-2, -1),
+                            atol=0.01,
+                            rtol=0.01)
 
 
 def test_multiple_gpus():
@@ -99,4 +100,5 @@ def test_multiple_gpus():
         testing.assert_allclose(U[0].abs(), u.abs())
         testing.assert_allclose(S[0].abs(), s.abs())
         testing.assert_allclose(V[0].abs(), v.abs())
-        testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1))
+        testing.assert_allclose(a,
+                                U @ torch.diag_embed(S) @ V.transpose(-2, -1))

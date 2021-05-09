@@ -31,4 +31,3 @@ def bench_speed(N, H, W):
 if __name__ == '__main__':
     bench_speed(10000, 9, 9)
     bench_speed(20000, 9, 9)
-
