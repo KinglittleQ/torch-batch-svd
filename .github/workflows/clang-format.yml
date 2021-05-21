@@ -16,8 +16,8 @@ jobs:
         inplace: True
     - uses: EndBug/add-and-commit@v4
       with:
-        author_name: Github Action Robot
-        author_email: robot@example.com
+        author_name: Github Action Bot
+        author_email: checkdeng.bot@gmail.com
         message: 'Auto format cpp files'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
