@@ -4,6 +4,7 @@ from . import _c
 
 
 class BatchSVDFunction(torch.autograd.Function):
+
     @staticmethod
     def forward(ctx,
                 input: torch.Tensor,
