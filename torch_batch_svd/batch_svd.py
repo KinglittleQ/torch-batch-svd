@@ -4,6 +4,7 @@ from . import _c
 
 
 class BatchSVDFunction(torch.autograd.Function):
+
     @staticmethod
     def forward(ctx,
                 input: torch.Tensor,
@@ -24,11 +25,13 @@ class BatchSVDFunction(torch.autograd.Function):
             'This implementation only supports matrices having dims smaller than 32'
 
         is_double = True if input.dtype == torch.double else False
-        if input.dtype == torch.half:
+        torch_bf16_dtype = getattr(torch, "bfloat16", False)
+
+        if input.dtype in (torch.half, torch_bf16_dtype):
             input = input.float()
-            ctx.is_half = True
+            ctx.dtype = input.dtype
         else:
-            ctx.is_half = False
+            ctx.dtype = False
 
         if out is None:
             b, m, n = input.shape
@@ -41,7 +44,7 @@ class BatchSVDFunction(torch.autograd.Function):
         _c.batch_svd_forward(input, U, S, V, True, 1e-7, 100, is_double)
         U.transpose_(1, 2)
         V.transpose_(1, 2)
-        if ctx.is_half:
+        if ctx.dtype:
             U, S, V = U.half(), S.half(), V.half()
 
         k = S.size(1)
@@ -60,15 +63,15 @@ class BatchSVDFunction(torch.autograd.Function):
     def backward(ctx, grad_u: torch.Tensor, grad_s: torch.Tensor,
                  grad_v: torch.Tensor):
         A, U, S, V = ctx.saved_tensors
-        if ctx.is_half:
+        if ctx.dtype:
             grad_u, grad_s, grad_v = grad_u.float(), grad_s.float(
             ), grad_v.float()
 
         grad_out: torch.Tensor = _c.batch_svd_backward(
             [grad_u, grad_s, grad_v], A, True, True, U.to(A.dtype),
             S.to(A.dtype), V.to(A.dtype))
-        if ctx.is_half:
-            grad_out = grad_out.half()
+        if ctx.dtype:
+            grad_out = grad_out.to(ctx.dtype)
 
         return grad_out
 
