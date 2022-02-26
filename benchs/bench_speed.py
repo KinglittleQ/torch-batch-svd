@@ -28,6 +28,6 @@ def bench_speed(N, H, W):
     print("Perform torch.svd on a {}x{}x{} matrix: {} ms".format(N, H, W, t))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     bench_speed(10000, 9, 9)
     bench_speed(20000, 9, 9)

@@ -9,7 +9,6 @@ N, H, W = 100, 9, 3
 
 
 class TestSVD(unittest.TestCase):
-
     def test_float(self):
         torch.manual_seed(0)
         a = torch.randn(N, H, W).cuda()
@@ -57,7 +56,6 @@ class TestSVD(unittest.TestCase):
         testing.assert_allclose(V[0].abs(), v.abs())
         testing.assert_allclose(a, U @ torch.diag_embed(S) @ V.transpose(-2, -1))
 
-
     def test_half(self):
         torch.manual_seed(0)
         a = torch.randn(N, H, W).cuda().half()
@@ -77,12 +75,11 @@ class TestSVD(unittest.TestCase):
         a_ = U @ torch.diag_embed(S) @ V.transpose(-2, -1)
         testing.assert_allclose(a, a_, atol=0.01, rtol=0.01)
 
-
     def test_multiple_gpus(self):
         num_gpus = torch.cuda.device_count()
 
         for gpu_idx in range(num_gpus):
-            device = torch.device('cuda:{}'.format(gpu_idx))
+            device = torch.device("cuda:{}".format(gpu_idx))
 
             torch.manual_seed(0)
             a = torch.randn(N, H, W).to(device)
@@ -107,5 +104,5 @@ class TestSVD(unittest.TestCase):
             testing.assert_allclose(a, a_)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

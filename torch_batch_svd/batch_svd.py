@@ -5,11 +5,7 @@ from . import _c
 
 class BatchSVDFunction(torch.autograd.Function):
     @staticmethod
-    def forward(ctx,
-                input: torch.Tensor,
-                some=True,
-                compute_uv=True,
-                out=None):
+    def forward(ctx, input: torch.Tensor, some=True, compute_uv=True, out=None):
         """
         This function returns `(U, S, V)`
         which is the singular value decomposition
@@ -20,8 +16,9 @@ class BatchSVDFunction(torch.autograd.Function):
         :param out:
         :return:
         """
-        assert input.shape[-1] < 32 and input.shape[-2] < 32, \
-            'This implementation only supports matrices having dims smaller than 32'
+        assert (
+            input.shape[-1] < 32 and input.shape[-2] < 32
+        ), "This implementation only supports matrices having dims smaller than 32"
 
         is_double = True if input.dtype == torch.double else False
         if input.dtype == torch.half:
@@ -57,16 +54,14 @@ class BatchSVDFunction(torch.autograd.Function):
         return (U_reduced, S, V_reduced) if some else (U, S, V)
 
     @staticmethod
-    def backward(ctx, grad_u: torch.Tensor, grad_s: torch.Tensor,
-                 grad_v: torch.Tensor):
+    def backward(ctx, grad_u: torch.Tensor, grad_s: torch.Tensor, grad_v: torch.Tensor):
         A, U, S, V = ctx.saved_tensors
         if ctx.is_half:
-            grad_u, grad_s, grad_v = grad_u.float(), grad_s.float(
-            ), grad_v.float()
+            grad_u, grad_s, grad_v = grad_u.float(), grad_s.float(), grad_v.float()
 
         grad_out: torch.Tensor = _c.batch_svd_backward(
-            [grad_u, grad_s, grad_v], A, True, True, U.to(A.dtype),
-            S.to(A.dtype), V.to(A.dtype))
+            [grad_u, grad_s, grad_v], A, True, True, U.to(A.dtype), S.to(A.dtype), V.to(A.dtype)
+        )
         if ctx.is_half:
             grad_out = grad_out.half()
 
