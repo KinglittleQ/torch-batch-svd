@@ -1,17 +1,15 @@
 name: Run pylint
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: autoyapf
-      id: autoyapf
-      uses: mritunjaysharma394/autoyapf@v2
+    - uses: psf/black@stable
       with:
-        args: --style pep8 --recursive --in-place .
+        options: "-l 120 --verbose"
     - uses: EndBug/add-and-commit@v4
       with:
         author_name: Github Action Bot
