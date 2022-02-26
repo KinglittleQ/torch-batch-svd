@@ -40,11 +40,14 @@ void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V,
   auto params =
       unique_allocate(cusolverDnCreateGesvdjInfo, cusolverDnDestroyGesvdjInfo);
   auto status = cusolverDnXgesvdjSetTolerance(params.get(), tol);
-  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnXgesvdjSetTolerance status ", status);
+  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+              "cusolverDnXgesvdjSetTolerance status ", status);
   status = cusolverDnXgesvdjSetMaxSweeps(params.get(), max_sweeps);
-  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnXgesvdjSetMaxSweeps status ", status);
+  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+              "cusolverDnXgesvdjSetMaxSweeps status ", status);
   status = cusolverDnXgesvdjSetSortEig(params.get(), is_sort);
-  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnXgesvdjSetSortEig status ", status);
+  TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+              "cusolverDnXgesvdjSetSortEig status ", status);
 
   auto jobz = CUSOLVER_EIG_MODE_VECTOR; // compute eigenvalues and eigenvectors
   int lwork;
@@ -59,13 +62,15 @@ void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V,
     status = cusolverDnDgesvdjBatched_bufferSize(
         handle_ptr.get(), jobz, m, n, d_A, lda, d_s, d_U, ldu, d_V, ldv, &lwork,
         params.get(), batch_size);
-    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnDgesvdjBatched_bufferSize status ", status);
+    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+                "cusolverDnDgesvdjBatched_bufferSize status ", status);
     auto work_ptr = unique_cuda_ptr<double>(lwork);
 
     status = cusolverDnDgesvdjBatched(
         handle_ptr.get(), jobz, m, n, d_A, lda, d_s, d_U, ldu, d_V, ldv,
         work_ptr.get(), lwork, info_ptr.get(), params.get(), batch_size);
-    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnDgesvdjBatched status ", status);
+    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+                "cusolverDnDgesvdjBatched status ", status);
   } else {
     const auto d_A = A.data_ptr<float>();
     auto d_s = s.data_ptr<float>();
@@ -75,20 +80,23 @@ void batch_svd_forward(at::Tensor a, at::Tensor U, at::Tensor s, at::Tensor V,
     status = cusolverDnSgesvdjBatched_bufferSize(
         handle_ptr.get(), jobz, m, n, d_A, lda, d_s, d_U, ldu, d_V, ldv, &lwork,
         params.get(), batch_size);
-    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnSgesvdjBatched_bufferSize status ", status);
+    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+                "cusolverDnSgesvdjBatched_bufferSize status ", status);
     auto work_ptr = unique_cuda_ptr<float>(lwork);
 
     status = cusolverDnSgesvdjBatched(
         handle_ptr.get(), jobz, m, n, d_A, lda, d_s, d_U, ldu, d_V, ldv,
         work_ptr.get(), lwork, info_ptr.get(), params.get(), batch_size);
-    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status, "cusolverDnSgesvdjBatched status ", status);
+    TORCH_CHECK(CUSOLVER_STATUS_SUCCESS == status,
+                "cusolverDnSgesvdjBatched status ", status);
   }
 
   std::vector<int> hinfo(batch_size);
   auto status_memcpy =
       cudaMemcpy(hinfo.data(), info_ptr.get(), sizeof(int) * batch_size,
                  cudaMemcpyDeviceToHost);
-  TORCH_CHECK(cudaSuccess == status_memcpy, "cudaMemcpy status ", status_memcpy);
+  TORCH_CHECK(cudaSuccess == status_memcpy, "cudaMemcpy status ",
+              status_memcpy);
 
   for (int i = 0; i < batch_size; ++i) {
     if (0 == hinfo[i]) {
