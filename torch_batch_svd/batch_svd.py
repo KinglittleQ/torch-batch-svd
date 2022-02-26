@@ -11,10 +11,10 @@ class BatchSVDFunction(torch.autograd.Function):
                 compute_uv=True,
                 out=None):
         """
-        This function returns `(U, S, V)` 
-        which is the singular value decomposition 
+        This function returns `(U, S, V)`
+        which is the singular value decomposition
         of a input real matrix or batches of real matrices `input`
-        
+
         :param ctx:
         :param input:
         :param out:
