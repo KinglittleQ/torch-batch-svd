@@ -2,9 +2,9 @@
 
 ## Introduction
 
-A batched version of SVD in Pytorch implemented using cuSolver
-including forward and backward function.
-In terms of speed, it is superior to that of `torch.svd`.
+A 100x faster SVD for PyTorch including forward and backward function.
+
+Performance:
 
 | matrix size      | torch_batch_svd.svd  | torch.svd  |
 | ---------------  |:--------------------:| :---------:|
