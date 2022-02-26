@@ -1,4 +1,3 @@
-import time
 import torch
 from torch_batch_svd import svd
 
