@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 
-#include <THC/THC.h>
+#include <ATen/ATen.h>
 #include <c10/cuda/CUDAGuard.h>
 
 #include "torch_batch_svd.h"
