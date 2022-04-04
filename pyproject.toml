@@ -1,0 +1,4 @@
+[build-system]
+# Default setuptools and wheel requirements from
+# https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/#fallback-behaviour
+requires = ["setuptools>=40.8.0", "wheel", "torch"]
