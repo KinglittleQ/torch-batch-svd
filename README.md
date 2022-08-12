@@ -65,3 +65,7 @@ python tests/test.py
 ## Example
 
 See `test.py` and [introduction](#1-introduction).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=KinglittleQ/torch-batch-svd&type=Date)](https://star-history.com/#KinglittleQ/torch-batch-svd&Date)
