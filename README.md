@@ -53,7 +53,8 @@ python setup.py install
 ### Test
 
 ```shell
-python tests/test.py
+cd tests
+python test.py
 ```
 
 ## Differences between `torch.svd()`
